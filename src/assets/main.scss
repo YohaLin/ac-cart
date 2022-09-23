@@ -1,0 +1,58 @@
+/* basic setting */
+//首先我們用 Sass 的變數 (variables)，宣告了在專案中常用的顏色與尺寸 (size) 大小。
+:root {
+  --body-bg: #fff;
+  --body-color: #18253d;
+  --white: #fff;
+  --main-blue: #001935;
+  --secondary-blue: #3c88fd;
+  --freedom-blue: #02b8ff;
+  --dark-gray: #4a4a4a;
+  --light-gray: #a7aaaf;
+  --active-stepper: #18253d;
+  --nonactive-stepper: #afb1bd;
+  --next-step: #f67599;
+  --number: #2a2a2a;
+  --form-label: #808080;
+  --form-input: #999999;
+  --cart: #f0f0f5;
+  --cart-bg: #fff;
+  --add-minus: #121212;
+  --footer: #e5e5e5;
+  --logo: url("https://upload.cc/i1/2022/08/22/Zet7mR.png");
+}
+
+// 因為step那邊的程式碼太重複，所以利用mixin來重複產生
+@mixin getStepNums($num) {
+  @for $i from 1 through $num {
+    &:nth-child(#{$i}) .circle-container::after {
+      content: "#{$i}";
+    }
+  }
+}
+
+// 宣告main裡面的繼承與覆寫
+%form-row-container {
+  display: grid; // 因為手機版與桌機版的排版差異大，且為二為排版，所以直接宣告grid排版
+  grid-template-columns: repeat(7, auto);
+  grid-column-gap: 1rem;
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    label {
+      margin-top: 1.5rem;
+      color: var(--form-label);
+    }
+    select,
+    input {
+      background: var(--body-bg);
+      color: var(--form-input);
+      width: 100%;
+      height: 2.5rem;
+      padding: 0.75rem 0 0.75rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 0.3rem;
+    }
+  }
+}
+
