@@ -1,10 +1,20 @@
 <template>
   <div>
     <!-- Modal ，希望在在currentStep的時候秀出來-->
-    <div id="modalBackground" v-show="currentStep === 4">
-    </div>
+    <div id="modalBackground" v-show="currentStep === 4"></div>
     <div id="modalPage" v-show="currentStep === 4">
-      <p>{{form}}</p>
+      <!-- <p>salutation: {{form.salutation}}</p>
+      <p>username: "{{ form.username }}",</p>
+      <p>phone: "{{ form.phone }}",</p>
+      <p>email: "{{ form.email }}",</p>
+      <p>city: "{{ form.city }}",</p>
+      <p>addr: "{{ form.addr }}",</p>
+      <p>deliveryFee: "{{ form.deliveryFee }}",</p>
+      <p>ccname: "{{ form.ccname }}",</p>
+      <p>cardnumber: "{{ form.cardnumber }}",</p>
+      <p>expdate: "{{ form.expdate }}",</p>
+      <p>cvv: "{{ form.cvv }}",</p>
+      <p>totalPrice: "{{ total }}",</p> -->
     </div>
     <!-- main -->
     <main id="main" class="main-panel">
@@ -130,7 +140,7 @@ export default {
     },
     deliveryFee: {
       handler: function () {
-        this.calculateDeliveryFee();
+        this.calculateTotal();
       },
       deep: true,
     },
@@ -145,23 +155,13 @@ export default {
       this.deliveryFee = deliveryFee;
       this.form = form;
     },
-    // 實作增加按鈕
+    // 實作增加按鈕，不需要再使用forEach
     afterAddQuantity(cartId) {
-      this.carts.forEach((cart) => {
-        if (cart.id === cartId) {
-          return this.carts[cart.id].quantity++;
-        }
-        return this.carts[cart.id].quantity;
-      });
+      this.carts[cartId].quantity++
     },
     // 實作減少按鈕
     afterDeleteQuantity(cartId) {
-      this.carts.forEach((cart) => {
-        if (cart.id === cartId && cart.quantity > 0) {
-          return this.carts[cart.id].quantity--;
-        }
-        return this.carts[cart.id].quantity;
-      });
+        this.carts[cartId].quantity && this.carts[cartId].quantity--
     },
     // 實作下一步，最後一頁不可以再按下一步
     afterAddStep() {
@@ -177,30 +177,22 @@ export default {
     },
     // 計算運費為500
     afterAddDeliveryFee() {
-      console.log(true);
-      return (this.deliveryFee = true);
+      this.deliveryFee = 500
     },
     // 計算運費為0
     afterNoDeliveryFee() {
-      return (this.deliveryFee = false);
+      this.deliveryFee = 0
     },
     afterFormChange(form) {
       return (this.form = form);
     },
-    afterFinishForm(){
-      return this.form = {
+    afterFinishForm() {
+      return (this.form = {
         ...this.form,
-        total: this.total
-      }
+        total: this.total,
+      });
     },
     // 將運費加進總額裡面，因為預設值為false，所以一開始若點擊標準運送就不影響total
-    calculateDeliveryFee() {
-      if (this.deliveryFee === true) {
-        return (this.total = this.total + 500);
-      } else if (this.deliveryFee === false) {
-        return (this.total = this.total - 500);
-      }
-    },
     calculateTotal() {
       let money = 0;
       this.carts.forEach((cart) => {
@@ -234,7 +226,7 @@ hr {
   margin: 0 auto;
 }
 
-#modalBackground{
+#modalBackground {
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -245,8 +237,8 @@ hr {
 
 #modalPage {
   border-radius: 0.5rem;
-  width: 30Vw;
-  height: 30Vw;
+  width: 30vw;
+  height: 30vw;
   background-color: var(--white);
   position: absolute;
   top: 50%;
