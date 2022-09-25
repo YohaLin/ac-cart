@@ -3,18 +3,36 @@
     <!-- Modal ，希望在在currentStep的時候秀出來-->
     <div id="modalBackground" v-show="currentStep === 4"></div>
     <div id="modalPage" v-show="currentStep === 4">
-      <!-- <p>salutation: {{form.salutation}}</p>
-      <p>username: "{{ form.username }}",</p>
-      <p>phone: "{{ form.phone }}",</p>
-      <p>email: "{{ form.email }}",</p>
-      <p>city: "{{ form.city }}",</p>
-      <p>addr: "{{ form.addr }}",</p>
-      <p>deliveryFee: "{{ form.deliveryFee }}",</p>
-      <p>ccname: "{{ form.ccname }}",</p>
-      <p>cardnumber: "{{ form.cardnumber }}",</p>
-      <p>expdate: "{{ form.expdate }}",</p>
-      <p>cvv: "{{ form.cvv }}",</p>
-      <p>totalPrice: "{{ total }}",</p> -->
+      <div id="modalPageContainer">
+        <p>salutation: "{{ form.salutation }}",</p>
+        <p>username: "{{ form.username }}",</p>
+        <p>phone: "{{ form.phone }}",</p>
+        <p>email: "{{ form.email }}",</p>
+        <p>city: "{{ form.city }}",</p>
+        <p>addr: "{{ form.addr }}",</p>
+        <p>deliveryFee: "{{ form.deliveryFee }}",</p>
+        <p>ccname: "{{ form.ccname }}",</p>
+        <p>cardnumber: "{{ form.cardnumber }}",</p>
+        <p>expdate: "{{ form.expdate }}",</p>
+        <p>cvv: "{{ form.cvv }}",</p>
+        <p>totalPrice: "{{ total }}",</p>
+        <div class="modalPageButton d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click.stop.prevent="clickModalPageButton"
+          >
+            取消
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click.stop.prevent="clickModalPageButton"
+          >
+            確定訂單正確
+          </button>
+        </div>
+      </div>
     </div>
     <!-- main -->
     <main id="main" class="main-panel">
@@ -93,6 +111,20 @@ const dummyData = {
   steps: [1, 2, 3, 4],
   currentStep: 1,
   deliveryFee: false,
+  form: {
+    salutation: "",
+    username: "",
+    phone: "",
+    email: "",
+    city: "",
+    addr: "",
+    deliveryFee: 0,
+    ccname: "",
+    cardnumber: "",
+    expdate: "",
+    cvv: "",
+    totalPrice: 0,
+  },
 };
 
 export default {
@@ -110,20 +142,7 @@ export default {
       steps: [],
       currentStep: 0,
       deliveryFee: false,
-      form: {
-        salutation: "",
-        username: "",
-        phone: "",
-        email: "",
-        city: "",
-        addr: "",
-        deliveryFee: 0,
-        ccname: "",
-        cardnumber: "",
-        expdate: "",
-        cvv: "",
-        totalPrice: 0,
-      },
+      form: {},
     };
   },
   created() {
@@ -155,33 +174,44 @@ export default {
       this.deliveryFee = deliveryFee;
       this.form = form;
     },
+    // 若點擊確認訂單，會跳成第一步；若點擊取消，回到第三步
+    clickModalPageButton(e){
+      return e.target.matches('.btn-primary') ? this.currentStep = 1 : this.currentStep = 3
+    },
     // 實作增加按鈕，不需要再使用forEach
     afterAddQuantity(cartId) {
-      this.carts[cartId].quantity++
+      this.carts[cartId].quantity++;
     },
     // 實作減少按鈕
     afterDeleteQuantity(cartId) {
-        this.carts[cartId].quantity && this.carts[cartId].quantity--
+      this.carts[cartId].quantity && this.carts[cartId].quantity--;
     },
     // 實作下一步，最後一頁不可以再按下一步
     afterAddStep() {
-      if (this.currentStep < this.steps.length) {
-        return this.currentStep++;
+      if (this.currentStep < this.steps.length - 1) {
+        this.currentStep++;
+      } else {
+        if(Object.values(this.form).every(value => String(value).trim().length>0)){
+          this.currentStep++;
+        }else {
+          this.currentStep
+          alert('有資料尚未填寫完成。')
+        }
       }
     },
     // 實作上一步，第一頁不可以再按上一步
     afterMinusStep() {
       if (this.currentStep > 0) {
-        return this.currentStep--;
+        this.currentStep--;
       }
     },
     // 計算運費為500
     afterAddDeliveryFee() {
-      this.deliveryFee = 500
+      this.deliveryFee = 500;
     },
     // 計算運費為0
     afterNoDeliveryFee() {
-      this.deliveryFee = 0
+      this.deliveryFee = 0;
     },
     afterFormChange(form) {
       return (this.form = form);
@@ -227,9 +257,9 @@ hr {
 }
 
 #modalBackground {
-  position: absolute;
+  position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   opacity: 0.7;
   background-color: black;
   z-index: 998;
@@ -240,6 +270,18 @@ hr {
   width: 30vw;
   height: 30vw;
   background-color: var(--white);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+#modalPageContainer {
+  line-height: 0.5rem;
+  font-size: 0.5rem;
+  width: 80%;
+  height: 80%;
   position: absolute;
   top: 50%;
   left: 50%;

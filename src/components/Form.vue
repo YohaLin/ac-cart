@@ -28,7 +28,7 @@
                 id="name" 
                 type="text" 
                 placeholder="請輸入姓名"
-                v-model="form.name" />
+                v-model="form.username" />
             </div>
             <div class="form-row form-row-mobile">
               <label for="">電話</label>
